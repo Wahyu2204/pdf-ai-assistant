@@ -8,26 +8,27 @@ export default function Home() {
   const [filename, setFilename] = useState("");
 
   const uploadPDF = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
+  const formData = new FormData();
+  formData.append("file", file);
 
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-    const data = await res.json();
-    
-    if (data.success) {
-      setPdfText(data.text);
-      setFilename(data.filename);
-      alert(`✅ PDF berhasil diparse! ${data.pages} halaman`);
-    } else {
-      alert("❌ Gagal parse PDF");
-    }
-  };
+  alert("⏳ Sedang memproses PDF, tunggu sebentar...");
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+  });
+  const data = await res.json();
+
+  if (data.success) {
+    setFilename(data.filename);
+    alert(`✅ ${data.filename} berhasil diproses! ${data.chunks} chunks disimpan ke database`);
+  } else {
+    alert("❌ Gagal proses PDF: " + data.error);
+  }
+};
 
   const sendMessage = async () => {
     if (!message) return;
